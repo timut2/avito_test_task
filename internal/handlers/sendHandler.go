@@ -47,4 +47,8 @@ func (h *sendHandler) Send(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode("Transaction went successfully")
+	if err != nil {
+		log.Printf("Error with decoding JSON forresponse: %v", err)
+	}
 }
