@@ -8,27 +8,24 @@ import (
 )
 
 type AuthService struct {
-	userRepo *repository.UserRepository
+	userRepo repository.UserRepo
 }
 
-func NewAuthService(userRepo *repository.UserRepository) *AuthService {
+func NewAuthService(userRepo repository.UserRepo) *AuthService {
 	return &AuthService{userRepo: userRepo}
 }
 
-var (
-	ErrInvalidPassword = errors.New("invalid password")
-)
+var ErrInvalidPassword = errors.New("invalid password")
 
 func (s *AuthService) Authentication(username, password string) (*models.User, error) {
 	user, err := s.userRepo.FindByUserName(username)
-
 	if err != nil {
 		if errors.Is(err, repository.ErrUserNotFound) {
 			newUser := &models.User{
 				Username: username,
 				Password: password,
 			}
-			if err := s.userRepo.Create(newUser); err != nil {
+			if newUser.Id, err = s.userRepo.Create(newUser); err != nil {
 				return nil, err
 			}
 			return newUser, nil
